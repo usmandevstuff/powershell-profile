@@ -1,12 +1,14 @@
-oh-my-posh init pwsh --config 'C:\Users\Muhammad_Usman\Documents\WindowsPowerShell\themes\catppuccin.omp.json' | Invoke-Expression
+oh-my-posh init pwsh --config 'C:\Users\usman\Documents\WindowsPowerShell\themes\catppuccin.omp.json' | Invoke-Expression
 
 
 Function lsdl {lsd -l}
 Function lsdla {lsd -la}
 
-Set-Alias -Name vim -Value nvim
-Set-Alias -Name l -Value lsdl
-Set-Alias -Name ll -Value lsdla
+#Set-Alias -Name vim -Value nvim
+Set-Alias vim nvim
+Set-Alias l lsdl
+Set-Alias la lsdla
+Set-Alias open explorer
 
 # =============================================================================
 #
