@@ -1,14 +1,23 @@
-oh-my-posh init pwsh --config 'C:\Users\usman\Documents\WindowsPowerShell\themes\catppuccin.omp.json' | Invoke-Expression
+oh-my-posh init pwsh --config 'C:\Users\usman\Documents\PowerShell\themes\catppuccin_frappe.omp.json' | Invoke-Expression
 
 
-Function lsdl {lsd -l}
-Function lsdla {lsd -la}
+Function lsdl
+{lsd -l
+}
+Function lsdla
+{lsd -la
+}
+Function back
+{cd ..
+}
 
 #Set-Alias -Name vim -Value nvim
 Set-Alias vim nvim
-Set-Alias l lsdl
+Set-Alias l lsd
 Set-Alias la lsdla
+Set-Alias ll lsdl
 Set-Alias open explorer
+Set-Alias .. back
 
 # =============================================================================
 #
@@ -16,37 +25,46 @@ Set-Alias open explorer
 #
 
 # Call zoxide binary, returning the output as UTF-8.
-function global:__zoxide_bin {
+function global:__zoxide_bin
+{
     $encoding = [Console]::OutputEncoding
-    try {
+    try
+    {
         [Console]::OutputEncoding = [System.Text.Utf8Encoding]::new()
         $result = zoxide @args
         return $result
-    } finally {
+    } finally
+    {
         [Console]::OutputEncoding = $encoding
     }
 }
 
 # pwd based on zoxide's format.
-function global:__zoxide_pwd {
+function global:__zoxide_pwd
+{
     $cwd = Get-Location
-    if ($cwd.Provider.Name -eq "FileSystem") {
+    if ($cwd.Provider.Name -eq "FileSystem")
+    {
         $cwd.ProviderPath
     }
 }
 
 # cd + custom logic based on the value of _ZO_ECHO.
-function global:__zoxide_cd($dir, $literal) {
-    $dir = if ($literal) {
+function global:__zoxide_cd($dir, $literal)
+{
+    $dir = if ($literal)
+    {
         Set-Location -LiteralPath $dir -Passthru -ErrorAction Stop
-    } else {
-        if ($dir -eq '-' -and ($PSVersionTable.PSVersion -lt 6.1)) {
+    } else
+    {
+        if ($dir -eq '-' -and ($PSVersionTable.PSVersion -lt 6.1))
+        {
             Write-Error "cd - is not supported below PowerShell 6.1. Please upgrade your version of PowerShell."
-        }
-        elseif ($dir -eq '+' -and ($PSVersionTable.PSVersion -lt 6.2)) {
+        } elseif ($dir -eq '+' -and ($PSVersionTable.PSVersion -lt 6.2))
+        {
             Write-Error "cd + is not supported below PowerShell 6.2. Please upgrade your version of PowerShell."
-        }
-        else {
+        } else
+        {
             Set-Location -Path $dir -Passthru -ErrorAction Stop
         }
     }
@@ -59,10 +77,13 @@ function global:__zoxide_cd($dir, $literal) {
 
 # Hook to add new entries to the database.
 $global:__zoxide_oldpwd = __zoxide_pwd
-function global:__zoxide_hook {
+function global:__zoxide_hook
+{
     $result = __zoxide_pwd
-    if ($result -ne $global:__zoxide_oldpwd) {
-        if ($null -ne $result) {
+    if ($result -ne $global:__zoxide_oldpwd)
+    {
+        if ($null -ne $result)
+        {
             zoxide add -- $result
         }
         $global:__zoxide_oldpwd = $result
@@ -71,12 +92,15 @@ function global:__zoxide_hook {
 
 # Initialize hook.
 $global:__zoxide_hooked = (Get-Variable __zoxide_hooked -ErrorAction SilentlyContinue -ValueOnly)
-if ($global:__zoxide_hooked -ne 1) {
+if ($global:__zoxide_hooked -ne 1)
+{
     $global:__zoxide_hooked = 1
     $global:__zoxide_prompt_old = $function:prompt
 
-    function global:prompt {
-        if ($null -ne $__zoxide_prompt_old) {
+    function global:prompt
+    {
+        if ($null -ne $__zoxide_prompt_old)
+        {
             & $__zoxide_prompt_old
         }
         $null = __zoxide_hook
@@ -89,34 +113,40 @@ if ($global:__zoxide_hooked -ne 1) {
 #
 
 # Jump to a directory using only keywords.
-function global:__zoxide_z {
-    if ($args.Length -eq 0) {
+function global:__zoxide_z
+{
+    if ($args.Length -eq 0)
+    {
         __zoxide_cd ~ $true
-    }
-    elseif ($args.Length -eq 1 -and ($args[0] -eq '-' -or $args[0] -eq '+')) {
+    } elseif ($args.Length -eq 1 -and ($args[0] -eq '-' -or $args[0] -eq '+'))
+    {
         __zoxide_cd $args[0] $false
-    }
-    elseif ($args.Length -eq 1 -and (Test-Path $args[0] -PathType Container)) {
+    } elseif ($args.Length -eq 1 -and (Test-Path $args[0] -PathType Container))
+    {
         __zoxide_cd $args[0] $true
-    }
-    else {
+    } else
+    {
         $result = __zoxide_pwd
-        if ($null -ne $result) {
+        if ($null -ne $result)
+        {
             $result = __zoxide_bin query --exclude $result -- @args
-        }
-        else {
+        } else
+        {
             $result = __zoxide_bin query -- @args
         }
-        if ($LASTEXITCODE -eq 0) {
+        if ($LASTEXITCODE -eq 0)
+        {
             __zoxide_cd $result $true
         }
     }
 }
 
 # Jump to a directory using interactive search.
-function global:__zoxide_zi {
+function global:__zoxide_zi
+{
     $result = __zoxide_bin query -i -- @args
-    if ($LASTEXITCODE -eq 0) {
+    if ($LASTEXITCODE -eq 0)
+    {
         __zoxide_cd $result $true
     }
 }
